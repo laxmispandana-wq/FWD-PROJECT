@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TrackGuard — Safeguarding Gadgets Through Smart Tracking</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#050a12;--surface:#0b1524;--surface2:#0f1e30;--accent:#00e5ff;--accent2:#ff4d6d;--accent3:#7b61ff;--text:#e8f0fe;--muted:#6b82a8;--border:rgba(0,229,255,0.15);--glow:rgba(0,229,255,0.25);--card-bg:rgba(11,21,36,0.92);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6;}
+body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,229,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:68px;background:rgba(5,10,18,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent);text-decoration:none;cursor:pointer;}
+.nav-links{display:flex;gap:4px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 14px;border-radius:6px;transition:all .2s;display:block;}
+.nav-links a:hover{color:var(--accent);background:rgba(0,229,255,0.08);}
+.nav-cta{display:flex;gap:10px;}
+.btn-nav{padding:8px 20px;border-radius:6px;font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s;font-weight:700;}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+.btn-outline:hover{background:rgba(0,229,255,0.1);}
+.btn-solid{background:var(--accent);color:#050a12;border:1px solid var(--accent);}
+.btn-solid:hover{background:#33eaff;box-shadow:0 0 20px var(--glow);}
+
+/* PAGE SECTIONS */
+.page{display:none;min-height:100vh;padding-top:68px;}
+.page.active{display:block;}
+
+/* HERO */
+#page-home{position:relative;z-index:1;}
+.hero{min-height:calc(100vh - 68px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px;text-align:center;overflow:hidden;position:relative;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,229,255,0.12) 0%,transparent 70%);top:-100px;left:-200px;animation:floatA 8s ease-in-out infinite;}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(123,97,255,0.1) 0%,transparent 70%);bottom:-50px;right:-100px;animation:floatB 10s ease-in-out infinite;}
+@keyframes floatA{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
+@keyframes floatB{0%,100%{transform:translate(0,0)}50%{transform:translate(-25px,30px)}}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;border:1px solid rgba(0,229,255,0.3);background:rgba(0,229,255,0.06);font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:1px;margin-bottom:28px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.5rem,5.5vw,5rem);line-height:1.05;letter-spacing:-2px;margin-bottom:20px;}
+.grad-text{background:linear-gradient(90deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{max-width:560px;margin:0 auto 40px;color:var(--muted);font-size:16px;}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:64px;}
+.btn-hero{padding:14px 32px;border-radius:8px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;border:none;letter-spacing:.5px;}
+.btn-primary{background:var(--accent);color:#050a12;box-shadow:0 0 30px rgba(0,229,255,0.3);}
+.btn-primary:hover{box-shadow:0 0 50px rgba(0,229,255,0.5);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.stats-row{display:flex;gap:56px;justify-content:center;flex-wrap:wrap;}
+.stat-item{text-align:center;}
+.stat-num{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;color:var(--accent);}
+.stat-lbl{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+
+/* QUICK NAV CARDS ON HOME */
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;margin:0 auto;padding:60px 40px;}
+.quick-card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.quick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,229,255,0.07),transparent 60%);opacity:0;transition:.3s;}
+.quick-card:hover{border-color:rgba(0,229,255,0.4);transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,0.4);}
+.quick-card:hover::before{opacity:1;}
+.qc-icon{font-size:36px;margin-bottom:16px;}
+.qc-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);opacity:.5;margin-bottom:8px;letter-spacing:2px;}
+.quick-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:8px;}
+.quick-card p{color:var(--muted);font-size:13.5px;line-height:1.7;}
+.qc-arrow{position:absolute;right:20px;bottom:20px;font-size:20px;color:var(--accent);opacity:.5;transition:.2s;}
+.quick-card:hover .qc-arrow{opacity:1;transform:translate(3px,-3px);}
+
+/* SECTION PAGES */
+.section-page{max-width:1200px;margin:0 auto;padding:60px 40px;}
+.section-page .back-btn{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;cursor:pointer;margin-bottom:32px;padding:8px 16px;border-radius:8px;border:1px solid var(--border);transition:all .2s;background:transparent;}
+.section-page .back-btn:hover{color:var(--accent);border-color:var(--accent);}
+.page-title-row{margin-bottom:48px;}
+.page-label{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;}
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,3.5vw,3rem);letter-spacing:-1px;margin-bottom:12px;}
+.page-desc{color:var(--muted);font-size:15px;max-width:560px;}
+
+/* HARDWARE CARDS */
+.hw-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.hw-card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:32px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.hw-card:hover{border-color:rgba(0,229,255,0.4);transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,0.5);}
+.hw-card.expanded{border-color:var(--accent);background:rgba(0,229,255,0.04);}
+.hw-icon{width:52px;height:52px;border-radius:12px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:20px;}
+.hw-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:19px;margin-bottom:8px;}
+.hw-card>p{color:var(--muted);font-size:14px;line-height:1.7;}
+.hw-expand{display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--border);}
+.hw-card.expanded .hw-expand{display:block;}
+.hw-spec-row{display:flex;flex-direction:column;gap:10px;}
+.spec-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid rgba(0,229,255,0.08);}
+.spec-key{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+.spec-val{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);}
+.hw-tag{display:inline-block;margin-top:14px;padding:4px 12px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px;background:rgba(0,229,255,0.08);color:var(--accent);border:1px solid rgba(0,229,255,0.15);}
+.click-hint{font-size:11px;color:var(--muted);margin-top:14px;opacity:.6;}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.feat-card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:all .3s;}
+.feat-card:hover,.feat-card.open{border-color:rgba(0,229,255,0.4);transform:translateY(-3px);}
+.feat-card.open{background:rgba(0,229,255,0.04);}
+.feat-icon{font-size:30px;margin-bottom:14px;}
+.feat-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:8px;}
+.feat-card>p{color:var(--muted);font-size:13.5px;line-height:1.7;}
+.feat-detail{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.feat-card.open .feat-detail{display:block;}
+.feat-detail ul{list-style:none;padding:0;}
+.feat-detail li{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--muted);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.feat-detail li::before{content:'→';color:var(--accent);font-family:'Space Mono',monospace;font-size:11px;margin-top:2px;flex-shrink:0;}
+.feat-tag{display:inline-block;margin-top:12px;padding:3px 10px;border-radius:4px;font-size:10px;font-family:'Space Mono',monospace;background:rgba(0,229,255,0.08);color:var(--accent);border:1px solid rgba(0,229,255,0.15);}
+
+/* LIVE MAP */
+.map-container{border-radius:20px;overflow:hidden;border:1px solid var(--border);background:var(--surface);}
+.map-toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.map-tools{display:flex;gap:8px;}
+.map-tool-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;}
+.map-tool-btn.active,.map-tool-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,0.08);}
+.map-status{display:flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:11px;color:#22c55e;}
+.map-body{position:relative;height:440px;background:#0b1524;overflow:hidden;}
+.map-svg-bg{position:absolute;inset:0;width:100%;height:100%;}
+.map-device-panel{position:absolute;top:16px;right:16px;background:rgba(5,10,18,0.92);border:1px solid var(--border);border-radius:12px;padding:16px;width:200px;backdrop-filter:blur(20px);}
+.map-device-panel h4{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);margin-bottom:12px;letter-spacing:1px;}
+.map-dev-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:.2s;}
+.map-dev-item:hover{color:var(--accent);}
+.map-dev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.map-dev-name{font-size:12px;flex:1;}
+.map-dev-status{font-family:'Space Mono',monospace;font-size:9px;}
+.marker{position:absolute;transform:translate(-50%,-50%);cursor:pointer;z-index:5;}
+.marker-ring{width:36px;height:36px;border-radius:50%;background:rgba(0,229,255,0.15);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:ring 2s infinite;}
+@keyframes ring{0%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.marker-core{width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid white;box-shadow:0 0 12px var(--accent);position:relative;z-index:2;}
+.marker-tooltip{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:'Space Mono',monospace;font-size:9px;background:rgba(0,229,255,0.95);color:#050a12;padding:4px 10px;border-radius:4px;font-weight:700;pointer-events:none;}
+.marker.lost .marker-core{background:var(--accent2);box-shadow:0 0 12px var(--accent2);}
+.marker.lost .marker-ring{background:rgba(255,77,109,0.15);}
+.marker.lost .marker-tooltip{background:rgba(255,77,109,0.95);}
+.map-legend{position:absolute;bottom:16px;left:16px;background:rgba(5,10,18,0.92);border:1px solid var(--border);border-radius:10px;padding:12px 16px;backdrop-filter:blur(10px);}
+.leg-row{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;}
+.leg-row:last-child{margin:0;}
+.leg-dot{width:8px;height:8px;border-radius:50%;}
+.map-info-popup{position:absolute;display:none;z-index:20;background:rgba(5,10,18,0.95);border:1px solid var(--accent);border-radius:12px;padding:16px;min-width:200px;backdrop-filter:blur(20px);}
+.map-info-popup h4{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:8px;}
+.map-info-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.map-info-key{color:var(--muted);}
+.map-info-val{font-family:'Space Mono',monospace;color:var(--accent);font-size:11px;}
+.close-popup{position:absolute;top:8px;right:10px;cursor:pointer;color:var(--muted);font-size:14px;}
+
+/* STACK TABS */
+.tab-bar{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;}
+.tab{padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;transition:all .2s;border:1px solid var(--border);background:transparent;color:var(--muted);}
+.tab.active{background:var(--accent);color:#050a12;border-color:var(--accent);font-weight:700;}
+.tab:hover:not(.active){border-color:var(--accent);color:var(--accent);}
+.tab-panel{display:none;}
+.tab-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.stack-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:all .3s;}
+.stack-card:hover,.stack-card.open{border-color:rgba(123,97,255,0.5);transform:translateY(-2px);}
+.stack-card.open{background:rgba(123,97,255,0.04);}
+.stack-card h4{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px;}
+.stack-card>p{color:var(--muted);font-size:13px;}
+.stack-expand{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.stack-card.open .stack-expand{display:block;}
+.code-block{background:rgba(0,0,0,0.5);border:1px solid rgba(0,229,255,0.1);border-radius:8px;padding:14px;font-family:'Space Mono',monospace;font-size:11px;color:#7dd3fc;line-height:1.8;margin-top:10px;overflow-x:auto;}
+
+/* SECURITY */
+.sec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.sec-card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:all .3s;text-align:center;}
+.sec-card:hover,.sec-card.open{border-color:rgba(255,77,109,0.4);transform:translateY(-3px);box-shadow:0 16px 40px rgba(255,77,109,0.1);}
+.sec-card.open{background:rgba(255,77,109,0.03);}
+.sec-icon-wrap{width:56px;height:56px;border-radius:14px;margin:0 auto 18px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;}
+.sec-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:10px;}
+.sec-card>p{color:var(--muted);font-size:13.5px;}
+.sec-expand{display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,77,109,0.15);text-align:left;}
+.sec-card.open .sec-expand{display:block;}
+.sec-step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:13px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,0.04);}
+.sec-step-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent2);min-width:20px;}
+
+/* ALERTS */
+.alert-layout{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+.alert-panel{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.alert-head{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
+.alert-head h4{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;}
+.alert-body{padding:20px;}
+.notif{display:flex;gap:12px;padding:14px;border-radius:10px;margin-bottom:12px;cursor:pointer;transition:all .2s;}
+.notif:hover{transform:translateX(4px);}
+.notif.warn{background:rgba(255,77,109,0.07);border:1px solid rgba(255,77,109,0.2);}
+.notif.ok{background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);}
+.notif.info{background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.15);}
+.notif-ico{font-size:18px;}
+.notif-t h5{font-size:13px;font-weight:600;margin-bottom:3px;}
+.notif-t p{font-size:12px;color:var(--muted);}
+.notif-time{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px;}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.1);border-radius:10px;margin-bottom:10px;cursor:pointer;transition:.2s;}
+.toggle-row:hover{border-color:rgba(0,229,255,0.3);}
+.toggle-info h5{font-size:13px;font-weight:600;}
+.toggle-info p{font-size:12px;color:var(--muted);}
+.toggle-pill{padding:4px 12px;border-radius:20px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;transition:.2s;}
+.toggle-pill.on{background:rgba(0,229,255,0.2);color:var(--accent);}
+.toggle-pill.off{background:rgba(255,255,255,0.06);color:var(--muted);}
+
+/* DASHBOARD */
+.dash-wrap{border-radius:20px;overflow:hidden;border:1px solid var(--border);background:var(--surface);box-shadow:0 40px 120px rgba(0,0,0,0.5);}
+.dash-topbar{display:flex;align-items:center;gap:10px;padding:12px 20px;background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);}
+.wdot{width:10px;height:10px;border-radius:50%;}
+.dash-url{flex:1;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+.dash-body{display:grid;grid-template-columns:220px 1fr;min-height:540px;}
+.dash-sidebar{border-right:1px solid var(--border);padding:20px 14px;background:rgba(0,0,0,0.2);}
+.dash-user{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.dash-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#050a12;}
+.dash-uname{font-size:13px;font-weight:600;}
+.dash-role{font-size:11px;color:var(--muted);}
+.dash-nav{display:flex;flex-direction:column;gap:4px;}
+.dash-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s;border:1px solid transparent;}
+.dash-nav-item:hover{background:rgba(255,255,255,0.04);color:var(--text);}
+.dash-nav-item.active{background:rgba(0,229,255,0.1);color:var(--accent);border-color:rgba(0,229,255,0.2);}
+.dash-nav-item.danger:hover{color:var(--accent2);}
+.dash-main{padding:28px;}
+.dash-view{display:none;}
+.dash-view.active{display:block;}
+.dash-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.dash-hdr h2{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;}
+.btn-add{padding:9px 20px;border-radius:8px;background:var(--accent);color:#050a12;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;transition:.2s;}
+.btn-add:hover{background:#33eaff;box-shadow:0 0 20px var(--glow);}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.kpi{padding:16px;border-radius:12px;background:rgba(0,229,255,0.04);border:1px solid var(--border);}
+.kpi-val{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:var(--accent);}
+.kpi-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+.dtable{width:100%;border-collapse:collapse;}
+.dtable th{text-align:left;padding:9px 14px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);border-bottom:1px solid var(--border);letter-spacing:1px;}
+.dtable td{padding:12px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:.2s;}
+.dtable tr:hover td{background:rgba(0,229,255,0.03);}
+.badge{padding:3px 10px;border-radius:4px;font-size:10px;font-family:'Space Mono',monospace;}
+.b-safe{background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);}
+.b-lost{background:rgba(255,77,109,0.1);color:var(--accent2);border:1px solid rgba(255,77,109,0.2);}
+.b-move{background:rgba(0,229,255,0.1);color:var(--accent);border:1px solid rgba(0,229,255,0.2);}
+
+/* AUTH FORMS */
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+.auth-card{background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:36px;}
+.auth-card h3{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin-bottom:8px;}
+.auth-card>p{color:var(--muted);font-size:13px;margin-bottom:26px;}
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-family:'Space Mono',monospace;letter-spacing:.5px;}
+.fi{width:100%;padding:11px 14px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);font-size:14px;transition:.2s;font-family:'Inter',sans-serif;}
+.fi:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.1);}
+.fi::placeholder{color:var(--muted);}
+.fi option{background:#0b1524;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.btn-submit{width:100%;padding:12px;border-radius:8px;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;transition:.25s;background:var(--accent);color:#050a12;}
+.btn-submit:hover{box-shadow:0 0 30px rgba(0,229,255,0.3);transform:translateY(-1px);}
+.btn-submit-ghost{width:100%;padding:12px;border-radius:8px;cursor:pointer;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;transition:.25s;background:transparent;color:var(--text);border:1px solid var(--border);margin-top:10px;}
+.btn-submit-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.enc-badge{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 14px;border-radius:8px;background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);font-family:'Space Mono',monospace;font-size:10px;color:#22c55e;}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;z-index:2000;background:rgba(5,10,18,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;}
+.modal-bg.show{display:flex;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:90%;max-width:480px;position:relative;animation:popIn .3s ease;}
+@keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-x{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);cursor:pointer;font-size:15px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:.2s;}
+.modal-x:hover{color:var(--text);}
+.modal-box h3{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin-bottom:6px;}
+.modal-box>p{color:var(--muted);font-size:13px;margin-bottom:24px;}
+
+/* TOAST */
+#toasts{position:fixed;bottom:24px;right:24px;z-index:3000;display:flex;flex-direction:column;gap:10px;}
+.toast{display:flex;align-items:center;gap:12px;padding:13px 20px;border-radius:12px;min-width:280px;background:var(--surface2);border:1px solid var(--border);backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.4);font-size:13px;animation:slideUp .3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast.out{animation:slideDown .3s ease forwards;}
+@keyframes slideDown{to{opacity:0;transform:translateX(20px)}}
+
+/* FOOTER */
+.footer-wrap{position:relative;z-index:1;border-top:1px solid var(--border);padding:50px 40px 30px;max-width:1200px;margin:0 auto;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+.footer-brand p{color:var(--muted);font-size:14px;line-height:1.8;max-width:280px;margin-top:12px;}
+.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--accent);}
+.fcol h4{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:14px;text-transform:uppercase;}
+.fcol ul{list-style:none;}
+.fcol li{margin-bottom:8px;}
+.fcol a{color:var(--muted);text-decoration:none;font-size:14px;transition:.2s;cursor:pointer;}
+.fcol a:hover{color:var(--accent);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);}
+.tech-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;}
+.chip{padding:3px 9px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);border:1px solid var(--border);background:rgba(0,229,255,0.03);}
+
+@media(max-width:900px){
+  nav{padding:0 16px;}
+  .nav-links{display:none;}
+  .quick-grid,.hw-grid,.feat-grid,.sec-grid,.auth-grid,.alert-layout{grid-template-columns:1fr;}
+  .dash-body{grid-template-columns:1fr;}
+  .dash-sidebar{display:none;}
+  .tab-panel.active{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">🛰️ TrackGuard</div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('hardware')">Hardware</a></li>
+    <li><a onclick="showPage('features')">Features</a></li>
+    <li><a onclick="showPage('tracking')">Live Map</a></li>
+    <li><a onclick="showPage('stack')">Tech Stack</a></li>
+    <li><a onclick="showPage('security')">Security</a></li>
+    <li><a onclick="showPage('alerts')">Alerts</a></li>
+    <li><a onclick="showPage('dashboard')">Dashboard</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn-nav btn-outline" onclick="openModal('login')">Sign In</button>
+    <button class="btn-nav btn-solid" onclick="openModal('register')">Get Started</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════ HOME PAGE ══════════════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="hero-badge"><span class="live-dot"></span>REAL-TIME GPS TRACKING SYSTEM</div>
+    <h1>Safeguarding Gadgets<br><span class="grad-text">Through Smart Tracking</span></h1>
+    <p class="hero-sub">End-to-end IoT solution combining GPS hardware, live maps, and intelligent alerts to protect every device you own — everywhere, always.</p>
+    <div class="hero-btns">
+      <button class="btn-hero btn-primary" onclick="openModal('register')">🚀 Start Tracking Free</button>
+      <button class="btn-hero btn-ghost" onclick="showPage('tracking')">📍 View Live Demo</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-num">99.9%</div><div class="stat-lbl">Uptime</div></div>
+      <div class="stat-item"><div class="stat-num">&lt;5s</div><div class="stat-lbl">Update Rate</div></div>
+      <div class="stat-item"><div class="stat-num">AES-256</div><div class="stat-lbl">Encryption</div></div>
+      <div class="stat-item"><div class="stat-num">±3m</div><div class="stat-lbl">GPS Accuracy</div></div>
+    </div>
+  </div>
+
+  <!-- QUICK NAV CARDS -->
+  <div class="quick-grid">
+    <div class="quick-card" onclick="showPage('hardware')">
+      <div class="qc-num">01 — HARDWARE</div>
+      <div class="qc-icon">🔧</div>
+      <h3>IoT Hardware Stack</h3>
+      <p>GPS module, GSM/Wi-Fi module, Arduino/NodeMCU microcontroller, and battery system explained in detail.</p>
+      <span class="qc-arrow">↗</span>
+    </div>
+    <div class="quick-card" onclick="showPage('features')">
+      <div class="qc-num">02 — FEATURES</div>
+      <div class="qc-icon">⚡</div>
+      <h3>Core Features</h3>
+      <p>User auth, gadget registration, live map tracking, lost alerts, logout system and bonus analytics.</p>
+      <span class="qc-arrow">↗</span>
+    </div>
+    <div class="quick-card" onclick="showPage('tracking')">
+      <div class="qc-num">03 — LIVE MAP</div>
+      <div class="qc-icon">🗺️</div>
+      <h3>Live GPS Tracking</h3>
+      <p>Interactive map with animated device markers, geofencing zones, and real-time coordinate updates.</p>
+      <span class="qc-arrow">↗</span>
+    </div>
+    <div class="quick-card" onclick="showPage('stack')">
+      <div class="qc-num">04 — TECH STACK</div>
+      <div class="qc-icon">💻</div>
+      <h3>Frontend & Backend</h3>
+      <p>HTML/CSS/JS frontend, Node.js/PHP/Python backend, MySQL/MongoDB database with full code snippets.</p>
+      <span class="qc-arrow">↗</span>
+    </div>
+    <div class="quick-card" onclick="showPage('security')">
+      <div class="qc-num">05 — SECURITY</div>
+      <div class="qc-icon">🔐</div>
+      <h3>Security Architecture</h3>
+      <p>JWT auth, bcrypt encryption, SQL injection prevention, TLS 1.3, AES-256 at-rest encryption.</p>
+      <span class="qc-arrow">↗</span>
+    </div>
+    <div class="quick-card" onclick="showPage('dashboard')">
+      <div class="qc-num">06 — DASHBOARD</div>
+      <div class="qc-icon">📊</div>
+      <h3>Control Center</h3>
+      <p>Full interactive dashboard — add devices, view status, trigger alerts, manage your account.</p>
+      <span class="qc-arrow">↗</span>
+    </div>
+  </div>
+
+  <div class="footer-wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">🛰️ TrackGuard</div>
+        <p>Safeguarding gadgets through smart IoT tracking. Enterprise security meets consumer simplicity.</p>
+        <div class="tech-chips"><span class="chip">Arduino</span><span class="chip">Node.js</span><span class="chip">MySQL</span><span class="chip">Maps API</span><span class="chip">WebSocket</span></div>
+      </div>
+      <div class="fcol"><h4>Pages</h4><ul>
+        <li><a onclick="showPage('hardware')">Hardware</a></li>
+        <li><a onclick="showPage('features')">Features</a></li>
+        <li><a onclick="showPage('tracking')">Live Map</a></li>
+        <li><a onclick="showPage('alerts')">Alerts</a></li>
+      </ul></div>
+      <div class="fcol"><h4>Tech</h4><ul>
+        <li><a onclick="showPage('stack')">Frontend</a></li>
+        <li><a onclick="showPage('stack')">Backend</a></li>
+        <li><a onclick="showPage('stack')">Database</a></li>
+        <li><a onclick="showPage('stack')">IoT</a></li>
+      </ul></div>
+      <div class="fcol"><h4>Account</h4><ul>
+        <li><a onclick="openModal('register')">Register</a></li>
+        <li><a onclick="openModal('login')">Login</a></li>
+        <li><a onclick="showPage('security')">Security</a></li>
+        <li><a onclick="showPage('dashboard')">Dashboard</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2025 TrackGuard — Safeguarding Gadgets Through Smart Tracking</div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent)">v2.1.0 · All Systems Online 🟢</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ HARDWARE PAGE ══════════════════════════════ -->
+<div id="page-hardware" class="page">
+<div class="section-page">
+  <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+  <div class="page-title-row">
+    <div class="page-label">01 — HARDWARE LAYER</div>
+    <h1 class="page-title">IoT Hardware Components</h1>
+    <p class="page-desc">Click any component card to expand full specifications, wiring details, and code snippets.</p>
+  </div>
+  <div class="hw-grid">
+
+    <div class="hw-card" onclick="toggleHw(this)">
+      <div class="hw-icon">📡</div>
+      <h3>GPS Module (NEO-6M)</h3>
+      <p>Captures precise latitude/longitude using satellite triangulation. Works globally with no subscription.</p>
+      <p class="click-hint">👆 Click to expand specs</p>
+      <div class="hw-expand">
+        <div class="hw-spec-row">
+          <div class="spec-item"><span class="spec-key">Model</span><span class="spec-val">u-blox NEO-6M / NEO-8M</span></div>
+          <div class="spec-item"><span class="spec-key">Protocol</span><span class="spec-val">NMEA 0183</span></div>
+          <div class="spec-item"><span class="spec-key">Accuracy</span><span class="spec-val">±1–3 metres</span></div>
+          <div class="spec-item"><span class="spec-key">Update Rate</span><span class="spec-val">1 Hz (up to 10 Hz)</span></div>
+          <div class="spec-item"><span class="spec-key">Voltage</span><span class="spec-val">3.3V – 5V DC</span></div>
+          <div class="spec-item"><span class="spec-key">Interface</span><span class="spec-val">UART (TX/RX pins)</span></div>
+          <div class="spec-item"><span class="spec-key">Cold Start</span><span class="spec-val">27 seconds</span></div>
+        </div>
+        <div style="margin-top:14px;font-size:13px;color:var(--muted);line-height:1.7;">
+          <strong style="color:var(--text);">Arduino Wiring:</strong> VCC → 5V, GND → GND, TX → Pin 4, RX → Pin 3.<br>
+          Parse NMEA $GPRMC sentences to extract lat/lng in decimal degrees.
+        </div>
+        <span class="hw-tag">SATELLITE · NMEA · UART</span>
+      </div>
+    </div>
+
+    <div class="hw-card" onclick="toggleHw(this)">
+      <div class="hw-icon">📶</div>
+      <h3>GSM / Wi-Fi Module</h3>
+      <p>Transmits location data to the backend via cellular (SIM800L) or Wi-Fi (ESP8266) for flexible connectivity.</p>
+      <p class="click-hint">👆 Click to expand specs</p>
+      <div class="hw-expand">
+        <div class="hw-spec-row">
+          <div class="spec-item"><span class="spec-key">GSM Model</span><span class="spec-val">SIM800L / SIM900A</span></div>
+          <div class="spec-item"><span class="spec-key">Wi-Fi Model</span><span class="spec-val">ESP8266 (NodeMCU)</span></div>
+          <div class="spec-item"><span class="spec-key">Network</span><span class="spec-val">GSM 850/900/1800/1900</span></div>
+          <div class="spec-item"><span class="spec-key">Wi-Fi Band</span><span class="spec-val">2.4 GHz 802.11 b/g/n</span></div>
+          <div class="spec-item"><span class="spec-key">Data Protocol</span><span class="spec-val">HTTP POST / MQTT</span></div>
+          <div class="spec-item"><span class="spec-key">SIM Required</span><span class="spec-val">Yes (for GSM)</span></div>
+          <div class="spec-item"><span class="spec-key">Voltage</span><span class="spec-val">3.4V – 4.4V (SIM800L)</span></div>
+        </div>
+        <div style="margin-top:14px;font-size:13px;color:var(--muted);line-height:1.7;">
+          Use AT commands to open HTTP connection: <code style="color:var(--accent);font-size:11px;">AT+HTTPINIT → AT+HTTPPARA → AT+HTTPACTION=1</code><br>
+          ESP8266 uses <code style="color:var(--accent);font-size:11px;">WiFiClient + HTTPClient</code> library.
+        </div>
+        <span class="hw-tag">GSM · ESP8266 · HTTP · MQTT</span>
+      </div>
+    </div>
+
+    <div class="hw-card" onclick="toggleHw(this)">
+      <div class="hw-icon">🧠</div>
+      <h3>Microcontroller</h3>
+      <p>The brain of the device — processes GPS data, manages power, and orchestrates data transmission.</p>
+      <p class="click-hint">👆 Click to expand specs</p>
+      <div class="hw-expand">
+        <div class="hw-spec-row">
+          <div class="spec-item"><span class="spec-key">Option A</span><span class="spec-val">Arduino Uno (ATmega328P)</span></div>
+          <div class="spec-item"><span class="spec-key">Option B</span><span class="spec-val">NodeMCU ESP8266</span></div>
+          <div class="spec-item"><span class="spec-key">Clock Speed</span><span class="spec-val">16 MHz / 80 MHz</span></div>
+          <div class="spec-item"><span class="spec-key">Flash</span><span class="spec-val">32KB / 4MB</span></div>
+          <div class="spec-item"><span class="spec-key">Digital Pins</span><span class="spec-val">14 / 11</span></div>
+          <div class="spec-item"><span class="spec-key">Programming</span><span class="spec-val">C++ (Arduino IDE)</span></div>
+        </div>
+        <div style="margin-top:14px;font-size:13px;color:var(--muted);line-height:1.7;">
+          <strong style="color:var(--text);">Recommended:</strong> NodeMCU ESP8266 — built-in Wi-Fi eliminates need for separate GSM module, reducing cost and complexity.
+        </div>
+        <span class="hw-tag">ARDUINO · NODEMCU · C++</span>
+      </div>
+    </div>
+
+    <div class="hw-card" onclick="toggleHw(this)">
+      <div class="hw-icon">🔋</div>
+      <h3>Battery & Power Supply</h3>
+      <p>Rechargeable LiPo battery with TP4056 charging controller and step-down regulator for stable operation.</p>
+      <p class="click-hint">👆 Click to expand specs</p>
+      <div class="hw-expand">
+        <div class="hw-spec-row">
+          <div class="spec-item"><span class="spec-key">Battery</span><span class="spec-val">3.7V 2500mAh LiPo</span></div>
+          <div class="spec-item"><span class="spec-key">Charger IC</span><span class="spec-val">TP4056 Module</span></div>
+          <div class="spec-item"><span class="spec-key">Regulator</span><span class="spec-val">MT3608 Step-Up 5V</span></div>
+          <div class="spec-item"><span class="spec-key">Runtime</span><span class="spec-val">48+ hours continuous</span></div>
+          <div class="spec-item"><span class="spec-key">Sleep Mode</span><span class="spec-val">~1mA draw</span></div>
+          <div class="spec-item"><span class="spec-key">Charge Time</span><span class="spec-val">~2.5 hours</span></div>
+        </div>
+        <div style="margin-top:14px;font-size:13px;color:var(--muted);line-height:1.7;">
+          Use deep sleep between GPS updates to dramatically extend battery life. Wake on timer interrupt every 30–60 seconds.
+        </div>
+        <span class="hw-tag">LIPO · TP4056 · DEEP SLEEP</span>
+      </div>
+    </div>
+
+    <div class="hw-card" style="grid-column:1/-1;cursor:default;" onclick="event.stopPropagation()">
+      <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:32px;align-items:center;">
+        <div>
+          <div class="hw-icon" style="background:rgba(123,97,255,0.15);border-color:rgba(123,97,255,0.3);">⚡</div>
+          <h3>Complete Hardware Data Flow</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-top:8px;">The full pipeline from satellite signal to your browser — every step explained.</p>
+          <button class="btn-hero btn-primary" style="margin-top:20px;padding:10px 22px;font-size:12px;" onclick="showPage('stack')">View Code →</button>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:12px;line-height:2.2;color:#7dd3fc;background:rgba(0,0,0,0.4);padding:22px;border-radius:12px;border:1px solid var(--border);">
+          <span style="color:var(--muted);">// Step 1</span><br>
+          GPS_MODULE → NMEA_PARSE($GPRMC)<br>
+          <span style="color:var(--muted);">// Step 2</span><br>
+          MCU → JSON_ENCODE({lat,lng,ts})<br>
+          <span style="color:var(--muted);">// Step 3</span><br>
+          GSM/WiFi → HTTP_POST /api/location<br>
+          <span style="color:var(--muted);">// Step 4</span><br>
+          BACKEND → DB_WRITE(coordinates)<br>
+          <span style="color:var(--muted);">// Step 5</span><br>
+          SERVER → WEBSOCKET_PUSH(client)<br>
+          <span style="color:var(--muted);">// Step 6</span><br>
+          BROWSER → MAP_UPDATE(marker) ✓
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════ FEATURES PAGE ══════════════════════════════ -->
+<div id="page-features" class="page">
+<div class="section-page">
+  <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+  <div class="page-title-row">
+    <div class="page-label">02 — CORE FEATURES</div>
+    <h1 class="page-title">Everything You Need</h1>
+    <p class="page-desc">Click any feature card to see detailed functionality, implementation notes, and sub-features.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card" onclick="toggleFeat(this)">
+      <div class="feat-icon">👤</div>
+      <h3>User Registration & Login</h3>
+      <p>Secure account creation with email verification and JWT session management.</p>
+      <span class="feat-tag">AUTH</span>
+      <div class="feat-detail">
+        <ul>
+          <li>Email + password registration with validation</li>
+          <li>Email verification link sent on signup</li>
+          <li>JWT access token (15 min) + refresh token (7 days)</li>
+          <li>Google OAuth 2.0 social login option</li>
+          <li>Brute-force protection (5 failed = 15 min lockout)</li>
+          <li>Two-factor authentication (TOTP/SMS)</li>
+          <li>Remember me with secure HttpOnly cookie</li>
+        </ul>
+        <button class="btn-submit" style="margin-top:14px;" onclick="event.stopPropagation();openModal('register')">Try Registration →</button>
+      </div>
+    </div>
+
+    <div class="feat-card" onclick="toggleFeat(this)">
+      <div class="feat-icon">📱</div>
+      <h3>Add Gadget Details</h3>
+      <p>Register any device with photos, serial numbers, and custom tracking hardware IDs.</p>
+      <span class="feat-tag">DEVICE MGMT</span>
+      <div class="feat-detail">
+        <ul>
+          <li>Name, type, brand, model, serial number</li>
+          <li>Upload device photo (stored on cloud)</li>
+          <li>Pair physical tracker hardware by ID</li>
+          <li>Set custom geofence radius (100m – 10km)</li>
+          <li>Add purchase date and warranty info</li>
+          <li>Assign tags and categories</li>
+          <li>Share device tracking with trusted contacts</li>
+        </ul>
+        <button class="btn-submit" style="margin-top:14px;" onclick="event.stopPropagation();openModal('addDevice')">Add Device →</button>
+      </div>
+    </div>
+
+    <div class="feat-card" onclick="toggleFeat(this)">
+      <div class="feat-icon">🗺️</div>
+      <h3>Live Tracking on Map</h3>
+      <p>Google Maps integration with real-time marker updates and geofence zone visualization.</p>
+      <span class="feat-tag">MAPS API</span>
+      <div class="feat-detail">
+        <ul>
+          <li>Google Maps JavaScript API v3 integration</li>
+          <li>WebSocket live updates every 5 seconds</li>
+          <li>Route trail / breadcrumb polyline history</li>
+          <li>Geofence circle drawing on map</li>
+          <li>Marker clustering for many devices</li>
+          <li>Street view jump for last known location</li>
+          <li>Export route as KML / GPX file</li>
+        </ul>
+        <button class="btn-submit" style="margin-top:14px;" onclick="event.stopPropagation();showPage('tracking')">Open Live Map →</button>
+      </div>
+    </div>
+
+    <div class="feat-card" onclick="toggleFeat(this)">
+      <div class="feat-icon">🚨</div>
+      <h3>Lost Gadget Alert</h3>
+      <p>Instant multi-channel alerts when a device leaves its geofence or goes offline.</p>
+      <span class="feat-tag">ALERTS</span>
+      <div class="feat-detail">
+        <ul>
+          <li>Browser push notification (instant)</li>
+          <li>Email alert via SendGrid / Nodemailer</li>
+          <li>SMS via Twilio API</li>
+          <li>Geofence exit detection with configurable radius</li>
+          <li>Device offline alert (no ping for 10 min)</li>
+          <li>Battery low alert (configurable threshold)</li>
+          <li>Alert history log with timestamps</li>
+        </ul>
+        <button class="btn-submit" style="margin-top:14px;" onclick="event.stopPropagation();showPage('alerts')">View Alerts →</button>
+      </div>
+    </div>
+
+    <div class="feat-card" onclick="toggleFeat(this)">
+      <div class="feat-icon">🔐</div>
+      <h3>Logout System</h3>
+      <p>Secure one-click logout with server-side token invalidation across all sessions.</p>
+      <span class="feat-tag">SESSION</span>
+      <div class="feat-detail">
+        <ul>
+          <li>Single device logout invalidates JWT</li>
+          <li>Remote logout from ALL devices simultaneously</li>
+          <li>Auto-logout on 15 min inactivity</li>
+          <li>Token blacklist maintained in Redis</li>
+          <li>Session history: device, browser, IP, time</li>
+          <li>Suspicious login detection + alert</li>
+        </ul>
+        <button class="btn-submit" style="margin-top:14px;" onclick="event.stopPropagation();toast('👋 Logged out securely','success')">Simulate Logout</button>
+      </div>
+    </div>
+
+    <div class="feat-card" onclick="toggleFeat(this)">
+      <div class="feat-icon">📊</div>
+      <h3>Analytics Dashboard</h3>
+      <p>Movement heatmaps, battery graphs, uptime reports — all in one view.</p>
+      <span class="feat-tag">BONUS FEATURE</span>
+      <div class="feat-detail">
+        <ul>
+          <li>Daily / weekly / monthly route replay</li>
+          <li>Battery level history chart</li>
+          <li>Device uptime percentage graph</li>
+          <li>Most visited locations heatmap</li>
+          <li>Alert frequency analytics</li>
+          <li>Export data as CSV or PDF report</li>
+        </ul>
+        <button class="btn-submit" style="margin-top:14px;" onclick="event.stopPropagation();showPage('dashboard')">Open Dashboard →</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════ TRACKING PAGE ══════════════════════════════ -->
+<div id="page-tracking" class="page">
+<div class="section-page">
+  <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+  <div class="page-title-row">
+    <div class="page-label">03 — LIVE TRACKING</div>
+    <h1 class="page-title">Real-Time Map</h1>
+    <p class="page-desc">Click any device marker or device in the panel to see full location details. Coordinates update every 3 seconds.</p>
+  </div>
+  <div class="map-container">
+    <div class="map-toolbar">
+      <div class="map-tools">
+        <button class="map-tool-btn active" id="mt-all" onclick="filterMap('all',this)">All Devices</button>
+        <button class="map-tool-btn" id="mt-safe" onclick="filterMap('safe',this)">Safe Only</button>
+        <button class="map-tool-btn" id="mt-lost" onclick="filterMap('lost',this)">Lost Only</button>
+        <button class="map-tool-btn" onclick="toast('📍 Geofence zones shown on map','info')">Geofences</button>
+        <button class="map-tool-btn" onclick="toast('🔄 Route history loaded','info')">Route Trail</button>
+      </div>
+      <div class="map-status"><span style="width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;animation:blink 1.5s infinite;"></span>LIVE — 3 devices tracked</div>
+    </div>
+    <div class="map-body" id="mapBody">
+      <svg class="map-svg-bg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <!-- Grid roads -->
+        <line x1="0" y1="35" x2="100" y2="35" stroke="rgba(0,229,255,0.1)" stroke-width=".3"/>
+        <line x1="0" y1="65" x2="100" y2="65" stroke="rgba(0,229,255,0.08)" stroke-width=".2"/>
+        <line x1="25" y1="0" x2="25" y2="100" stroke="rgba(0,229,255,0.1)" stroke-width=".3"/>
+        <line x1="60" y1="0" x2="60" y2="100" stroke="rgba(0,229,255,0.08)" stroke-width=".2"/>
+        <line x1="82" y1="0" x2="82" y2="100" stroke="rgba(0,229,255,0.06)" stroke-width=".15"/>
+        <!-- City blocks -->
+        <rect x="2" y="10" width="18" height="22" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <rect x="27" y="10" width="14" height="22" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <rect x="63" y="10" width="16" height="22" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <rect x="2" y="42" width="18" height="20" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <rect x="27" y="42" width="26" height="20" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <rect x="63" y="42" width="16" height="20" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <rect x="2" y="70" width="20" height="20" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <rect x="27" y="70" width="28" height="20" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <rect x="63" y="70" width="16" height="18" fill="rgba(0,229,255,0.03)" stroke="rgba(0,229,255,0.06)" stroke-width=".2" rx=".5"/>
+        <!-- Geofence circles -->
+        <circle cx="46" cy="36" r="12" fill="none" stroke="rgba(0,229,255,0.15)" stroke-width=".3" stroke-dasharray="1,1"/>
+        <!-- Route trail -->
+        <polyline points="20,70 25,65 35,60 46,36" fill="none" stroke="rgba(0,229,255,0.3)" stroke-width=".4" stroke-dasharray="1.5,.8"/>
+      </svg>
+
+      <!-- Markers -->
+      <div class="marker safe-marker" id="m1" style="left:46%;top:36%" onclick="showDeviceInfo('laptop')">
+        <div class="marker-ring"></div>
+        <div class="marker-tooltip">💻 Laptop</div>
+        <div class="marker-core"></div>
+      </div>
+      <div class="marker lost" id="m2" style="left:75%;top:55%" onclick="showDeviceInfo('phone')">
+        <div class="marker-ring" style="animation-delay:.5s"></div>
+        <div class="marker-tooltip">📱 Phone — LOST</div>
+        <div class="marker-core"></div>
+      </div>
+      <div class="marker safe-marker" id="m3" style="left:20%;top:70%" onclick="showDeviceInfo('bag')">
+        <div class="marker-ring" style="animation-delay:1s"></div>
+        <div class="marker-tooltip">🎒 Bag</div>
+        <div class="marker-core"></div>
+      </div>
+
+      <!-- Popup info box -->
+      <div class="map-info-popup" id="mapPopup">
+        <span class="close-popup" onclick="document.getElementById('mapPopup').style.display='none'">✕</span>
+        <h4 id="popupTitle">Device Name</h4>
+        <div id="popupRows"></div>
+      </div>
+
+      <!-- Device panel -->
+      <div class="map-device-panel">
+        <h4>TRACKED DEVICES</h4>
+        <div class="map-dev-item" onclick="showDeviceInfo('laptop')"><div class="map-dev-dot" style="background:var(--accent)"></div><span class="map-dev-name">💻 Laptop</span><span class="map-dev-status" style="color:var(--accent)">SAFE</span></div>
+        <div class="map-dev-item" onclick="showDeviceInfo('phone')"><div class="map-dev-dot" style="background:var(--accent2)"></div><span class="map-dev-name">📱 Phone</span><span class="map-dev-status" style="color:var(--accent2)">LOST</span></div>
+        <div class="map-dev-item" onclick="showDeviceInfo('bag')"><div class="map-dev-dot" style="background:var(--accent)"></div><span class="map-dev-name">🎒 Backpack</span><span class="map-dev-status" style="color:var(--accent)">SAFE</span></div>
+      </div>
+
+      <!-- Legend -->
+      <div class="map-legend">
+        <div class="leg-row"><div class="leg-dot" style="background:var(--accent)"></div>Safe / Online</div>
+        <div class="leg-row"><div class="leg-dot" style="background:var(--accent2)"></div>Lost / Alert</div>
+        <div class="leg-row"><div class="leg-dot" style="background:rgba(0,229,255,0.4);border:1px solid var(--accent)"></div>Geofence Zone</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════ TECH STACK PAGE ══════════════════════════════ -->
+<div id="page-stack" class="page">
+<div class="section-page">
+  <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+  <div class="page-title-row">
+    <div class="page-label">04 — TECH STACK</div>
+    <h1 class="page-title">Built With Modern Tools</h1>
+    <p class="page-desc">Click tabs to switch layers. Click any card to see code snippets and implementation details.</p>
+  </div>
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab(event,'frontend')">Frontend</button>
+    <button class="tab" onclick="switchTab(event,'backend')">Backend</button>
+    <button class="tab" onclick="switchTab(event,'database')">Database</button>
+    <button class="tab" onclick="switchTab(event,'iot')">IoT Firmware</button>
+  </div>
+
+  <div id="tab-frontend" class="tab-panel active">
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🌐 HTML5</h4>
+      <p>Semantic structure, PWA manifest, accessibility, responsive meta-tags.</p>
+      <div class="stack-expand">
+        <div class="code-block">&lt;!-- Responsive viewport --&gt;<br>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;<br>&lt;!-- PWA manifest --&gt;<br>&lt;link rel="manifest" href="/manifest.json"&gt;<br>&lt;!-- Semantic structure --&gt;<br>&lt;main&gt;&lt;section id="map"&gt;&lt;/section&gt;&lt;/main&gt;</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🎨 CSS3</h4>
+      <p>CSS variables, grid/flexbox layouts, keyframe animations, glass-morphism effects.</p>
+      <div class="stack-expand">
+        <div class="code-block">:root { --accent: #00e5ff; }<br>.card {<br>  background: rgba(11,21,36,0.85);<br>  backdrop-filter: blur(20px);<br>  border: 1px solid rgba(0,229,255,0.15);<br>  animation: fadeUp 0.5s ease;<br>}</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>⚡ JavaScript ES6+</h4>
+      <p>Async/await, WebSocket client, Fetch API, local state management.</p>
+      <div class="stack-expand">
+        <div class="code-block">// WebSocket live updates<br>const ws = new WebSocket('wss://api/live');<br>ws.onmessage = (e) => {<br>  const {lat, lng, id} = JSON.parse(e.data);<br>  updateMarker(id, lat, lng);<br>};<br>// Fetch API<br>const res = await fetch('/api/devices');<br>const devices = await res.json();</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🗺️ Google Maps API</h4>
+      <p>Dynamic markers, polylines, geofencing circles, InfoWindows.</p>
+      <div class="stack-expand">
+        <div class="code-block">const map = new google.maps.Map(el, {<br>  center: {lat: 17.38, lng: 78.48},<br>  zoom: 14, mapTypeId: 'roadmap'<br>});<br>const marker = new google.maps.Marker({<br>  position: {lat, lng}, map,<br>  title: 'My Laptop'<br>});</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-backend" class="tab-panel">
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🟢 Node.js + Express</h4>
+      <p>REST API for device management, user auth, and location ingestion.</p>
+      <div class="stack-expand">
+        <div class="code-block">app.post('/api/location', auth, async (req, res) => {<br>  const { device_id, lat, lng } = req.body;<br>  await db.query(<br>    'INSERT INTO locations VALUES (?,?,?,NOW())',<br>    [device_id, lat, lng]<br>  );<br>  wss.broadcast({device_id, lat, lng});<br>  res.json({ ok: true });<br>});</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🐘 PHP (Alternative)</h4>
+      <p>Lightweight REST endpoints with PDO for MySQL, JWT auth.</p>
+      <div class="stack-expand">
+        <div class="code-block">&lt;?php<br>$stmt = $pdo->prepare(<br>  "INSERT INTO locations<br>   (device_id, lat, lng, timestamp)<br>   VALUES (?, ?, ?, NOW())"<br>);<br>$stmt->execute([$device_id, $lat, $lng]);<br>echo json_encode(['status' =&gt; 'ok']);</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🐍 Python / FastAPI</h4>
+      <p>High-performance async API with Pydantic validation.</p>
+      <div class="stack-expand">
+        <div class="code-block">@app.post("/api/location")<br>async def save_location(data: LocationModel,<br>    user=Depends(get_current_user)):<br>    await db.execute(<br>        "INSERT INTO locations ...",<br>        data.dict()<br>    )<br>    await ws_manager.broadcast(data)<br>    return {"ok": True}</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>📡 WebSocket Server</h4>
+      <p>Real-time bidirectional GPS push with &lt;500ms latency.</p>
+      <div class="stack-expand">
+        <div class="code-block">const wss = new WebSocket.Server({port:8080});<br>wss.broadcast = (data) => {<br>  wss.clients.forEach(client => {<br>    if (client.readyState === WebSocket.OPEN)<br>      client.send(JSON.stringify(data));<br>  });<br>};</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-database" class="tab-panel">
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🐬 MySQL Schema</h4>
+      <p>Relational schema for users, devices, locations. Indexed for fast queries.</p>
+      <div class="stack-expand">
+        <div class="code-block">CREATE TABLE locations (<br>  id INT AUTO_INCREMENT PRIMARY KEY,<br>  device_id VARCHAR(36) NOT NULL,<br>  lat DECIMAL(10,8) NOT NULL,<br>  lng DECIMAL(11,8) NOT NULL,<br>  timestamp DATETIME DEFAULT NOW(),<br>  INDEX idx_device_time (device_id, timestamp)<br>);</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🍃 MongoDB</h4>
+      <p>Flexible document store with 2dsphere geospatial indexing.</p>
+      <div class="stack-expand">
+        <div class="code-block">db.locations.createIndex({location:"2dsphere"});<br>// GeoJSON location format<br>{ device_id: "abc123",<br>  location: {<br>    type: "Point",<br>    coordinates: [78.48, 17.38]<br>  },<br>  timestamp: new Date() }</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>⚡ Redis Cache</h4>
+      <p>Sub-millisecond reads for latest device positions.</p>
+      <div class="stack-expand">
+        <div class="code-block">// Cache latest position per device<br>await redis.setex(<br>  `device:${id}:latest`,<br>  300, // 5 min TTL<br>  JSON.stringify({lat, lng, ts})<br>);<br>// Read from cache first<br>const cached = await redis.get(`device:${id}:latest`);</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🔑 Users Table</h4>
+      <p>Secure user schema with bcrypt password hashing.</p>
+      <div class="stack-expand">
+        <div class="code-block">CREATE TABLE users (<br>  id INT AUTO_INCREMENT PRIMARY KEY,<br>  email VARCHAR(255) UNIQUE NOT NULL,<br>  password_hash VARCHAR(255) NOT NULL,<br>  -- bcrypt hash, never plaintext<br>  created_at DATETIME DEFAULT NOW(),<br>  is_verified BOOLEAN DEFAULT FALSE<br>);</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-iot" class="tab-panel">
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🤖 Arduino GPS Parsing</h4>
+      <p>C++ firmware parsing NMEA sentences from GPS module.</p>
+      <div class="stack-expand">
+        <div class="code-block">#include &lt;TinyGPS++.h&gt;<br>TinyGPSPlus gps;<br>void loop() {<br>  while (serial.available() &gt; 0)<br>    gps.encode(serial.read());<br>  if (gps.location.isUpdated()) {<br>    float lat = gps.location.lat();<br>    float lng = gps.location.lng();<br>    sendToServer(lat, lng);<br>  }<br>}</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>📡 ESP8266 HTTP POST</h4>
+      <p>NodeMCU sending JSON payload to backend API over Wi-Fi.</p>
+      <div class="stack-expand">
+        <div class="code-block">#include &lt;ESP8266HTTPClient.h&gt;<br>HTTPClient http;<br>http.begin("https://api.trackguard.io/location");<br>http.addHeader("Content-Type","application/json");<br>http.addHeader("Authorization","Bearer "+token);<br>String body = "{\"lat\":"+String(lat)+<br>  ",\"lng\":"+String(lng)+"}";<br>int code = http.POST(body);</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>💤 Deep Sleep Mode</h4>
+      <p>Battery extension via 60-second sleep cycles between GPS pings.</p>
+      <div class="stack-expand">
+        <div class="code-block">void sendAndSleep() {<br>  // Get GPS fix<br>  // Send location to server<br>  sendLocation(lat, lng);<br>  // Deep sleep for 60 seconds<br>  // RST pin must be wired to D0<br>  ESP.deepSleep(60e6); // microseconds<br>}<br>// Wakes up, runs setup() again</div>
+      </div>
+    </div>
+    <div class="stack-card" onclick="toggleStack(this)">
+      <h4>🔄 OTA Firmware Updates</h4>
+      <p>Update device firmware remotely over Wi-Fi without physical access.</p>
+      <div class="stack-expand">
+        <div class="code-block">#include &lt;ArduinoOTA.h&gt;<br>ArduinoOTA.setHostname("trackguard-01");<br>ArduinoOTA.setPassword("securepass123");<br>ArduinoOTA.onStart([](){<br>  Serial.println("OTA Start");<br>});<br>ArduinoOTA.begin();<br>// In loop: ArduinoOTA.handle();</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════ SECURITY PAGE ══════════════════════════════ -->
+<div id="page-security" class="page">
+<div class="section-page">
+  <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+  <div class="page-title-row">
+    <div class="page-label">05 — SECURITY</div>
+    <h1 class="page-title">Enterprise-Grade Protection</h1>
+    <p class="page-desc">Click any security layer to expand implementation steps and technical details.</p>
+  </div>
+  <div class="sec-grid">
+    <div class="sec-card" onclick="toggleSec(this)">
+      <div class="sec-icon-wrap">🔑</div>
+      <h3>User Authentication</h3>
+      <p>JWT tokens with short expiry and device fingerprinting to prevent session hijacking.</p>
+      <div class="sec-expand">
+        <div class="sec-step"><span class="sec-step-num">01</span>User submits credentials via HTTPS POST</div>
+        <div class="sec-step"><span class="sec-step-num">02</span>Server verifies bcrypt hash against DB</div>
+        <div class="sec-step"><span class="sec-step-num">03</span>Issues JWT (15min) + Refresh token (7d)</div>
+        <div class="sec-step"><span class="sec-step-num">04</span>Tokens stored in HttpOnly cookies (XSS-safe)</div>
+        <div class="sec-step"><span class="sec-step-num">05</span>Every API request validates JWT signature</div>
+        <div style="margin-top:10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);">Algorithm: HS256 · Secret: 256-bit random</div>
+      </div>
+    </div>
+    <div class="sec-card" onclick="toggleSec(this)">
+      <div class="sec-icon-wrap">🔒</div>
+      <h3>Password Encryption</h3>
+      <p>bcrypt with work factor 12. Plaintext passwords never stored, logged, or transmitted.</p>
+      <div class="sec-expand">
+        <div class="sec-step"><span class="sec-step-num">01</span>User enters password in browser</div>
+        <div class="sec-step"><span class="sec-step-num">02</span>Sent over TLS — never logged</div>
+        <div class="sec-step"><span class="sec-step-num">03</span>bcrypt generates unique salt automatically</div>
+        <div class="sec-step"><span class="sec-step-num">04</span>12 rounds of hashing applied (~300ms)</div>
+        <div class="sec-step"><span class="sec-step-num">05</span>Only hash stored in DB — irreversible</div>
+        <div style="margin-top:10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);">bcrypt · Salt Rounds: 12 · PBKDF2 fallback</div>
+      </div>
+    </div>
+    <div class="sec-card" onclick="toggleSec(this)">
+      <div class="sec-icon-wrap">🗄️</div>
+      <h3>Secure Database</h3>
+      <p>Parameterized queries prevent SQL injection. RBAC isolates user data completely.</p>
+      <div class="sec-expand">
+        <div class="sec-step"><span class="sec-step-num">01</span>All queries use prepared statements (PDO/ORM)</div>
+        <div class="sec-step"><span class="sec-step-num">02</span>No raw user input in SQL strings — ever</div>
+        <div class="sec-step"><span class="sec-step-num">03</span>RBAC: users only query their own device data</div>
+        <div class="sec-step"><span class="sec-step-num">04</span>DB credentials in environment variables</div>
+        <div class="sec-step"><span class="sec-step-num">05</span>Full audit log of all writes</div>
+        <div style="margin-top:10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);">PDO Prepared · RBAC · Audit Trail</div>
+      </div>
+    </div>
+    <div class="sec-card" onclick="toggleSec(this)">
+      <div class="sec-icon-wrap">🌐</div>
+      <h3>HTTPS / TLS 1.3</h3>
+      <p>All traffic encrypted in transit. HSTS enforced. Certificate pinning on mobile.</p>
+      <div class="sec-expand">
+        <div class="sec-step"><span class="sec-step-num">01</span>SSL/TLS 1.3 certificate from Let's Encrypt</div>
+        <div class="sec-step"><span class="sec-step-num">02</span>HSTS header: max-age=31536000; includeSubDomains</div>
+        <div class="sec-step"><span class="sec-step-num">03</span>HTTP → HTTPS redirect enforced at Nginx</div>
+        <div class="sec-step"><span class="sec-step-num">04</span>Perfect Forward Secrecy (ECDHE key exchange)</div>
+        <div class="sec-step"><span class="sec-step-num">05</span>Cipher suite: TLS_AES_256_GCM_SHA384</div>
+        <div style="margin-top:10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);">TLS 1.3 · HSTS · PFS · OCSP Stapling</div>
+      </div>
+    </div>
+    <div class="sec-card" onclick="toggleSec(this)">
+      <div class="sec-icon-wrap">🛡️</div>
+      <h3>AES-256 Data Encryption</h3>
+      <p>GPS coordinates and device metadata encrypted at rest using AES-256-GCM.</p>
+      <div class="sec-expand">
+        <div class="sec-step"><span class="sec-step-num">01</span>Sensitive fields encrypted before DB insert</div>
+        <div class="sec-step"><span class="sec-step-num">02</span>AES-256-GCM provides authenticated encryption</div>
+        <div class="sec-step"><span class="sec-step-num">03</span>Encryption key stored in secure vault (AWS KMS)</div>
+        <div class="sec-step"><span class="sec-step-num">04</span>Decrypted only on authorized API read</div>
+        <div class="sec-step"><span class="sec-step-num">05</span>Key rotation every 90 days</div>
+        <div style="margin-top:10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);">AES-256-GCM · AWS KMS · 90-day rotation</div>
+      </div>
+    </div>
+    <div class="sec-card" onclick="toggleSec(this)">
+      <div class="sec-icon-wrap">⚡</div>
+      <h3>Rate Limiting & DDoS</h3>
+      <p>API throttling per IP and token. Nginx WAF with auto IP ban for abusers.</p>
+      <div class="sec-expand">
+        <div class="sec-step"><span class="sec-step-num">01</span>100 requests/min per IP via express-rate-limit</div>
+        <div class="sec-step"><span class="sec-step-num">02</span>10 login attempts/min (brute-force protection)</div>
+        <div class="sec-step"><span class="sec-step-num">03</span>Fail2Ban: 5 failures = 15 min IP ban</div>
+        <div class="sec-step"><span class="sec-step-num">04</span>Cloudflare DDoS protection at DNS level</div>
+        <div class="sec-step"><span class="sec-step-num">05</span>Nginx rate_limit_zone in shared memory</div>
+        <div style="margin-top:10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);">100 req/min · Fail2Ban · Cloudflare WAF</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════ ALERTS PAGE ══════════════════════════════ -->
+<div id="page-alerts" class="page">
+<div class="section-page">
+  <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+  <div class="page-title-row">
+    <div class="page-label">06 — ALERT SYSTEM</div>
+    <h1 class="page-title">Smart Notifications</h1>
+    <p class="page-desc">Click notifications to mark as read. Toggle alert types on/off. Simulate alerts with the buttons below.</p>
+  </div>
+  <div class="alert-layout">
+    <div class="alert-panel">
+      <div class="alert-head"><span style="font-size:18px">🔔</span><h4>Live Notifications</h4><span id="notif-count" style="margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);">3 unread</span></div>
+      <div class="alert-body" id="notifFeed">
+        <div class="notif warn" onclick="markRead(this)">
+          <div class="notif-ico">🚨</div>
+          <div class="notif-t"><h5>Phone left safe zone!</h5><p>OnePlus 12 moved 2.4km outside your home geofence boundary.</p><div class="notif-time">2 minutes ago</div></div>
+        </div>
+        <div class="notif ok" onclick="markRead(this)">
+          <div class="notif-ico">✅</div>
+          <div class="notif-t"><h5>Laptop returned to zone</h5><p>Dell XPS 15 is back within the office geofence. Status: Safe.</p><div class="notif-time">18 minutes ago</div></div>
+        </div>
+        <div class="notif info" onclick="markRead(this)">
+          <div class="notif-ico">🔋</div>
+          <div class="notif-t"><h5>Battery low — Backpack Tracker</h5><p>Device battery at 12%. Please recharge to maintain tracking.</p><div class="notif-time">1 hour ago</div></div>
+        </div>
+      </div>
+      <div style="padding:0 20px 20px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn-submit" style="flex:1;font-size:11px;" onclick="addAlert('warn')">+ Simulate Lost Alert</button>
+        <button class="btn-submit" style="flex:1;font-size:11px;background:rgba(34,197,94,0.2);color:#22c55e;border:1px solid rgba(34,197,94,0.3);" onclick="addAlert('ok')">+ Simulate Safe Alert</button>
+      </div>
+    </div>
+
+    <div class="alert-panel">
+      <div class="alert-head"><span style="font-size:18px">⚙️</span><h4>Alert Settings</h4></div>
+      <div class="alert-body">
+        <div class="toggle-row" onclick="toggleAlert(this)"><div class="toggle-info"><h5>Geofence Alerts</h5><p>Trigger when device exits safe zone</p></div><span class="toggle-pill on">ON</span></div>
+        <div class="toggle-row" onclick="toggleAlert(this)"><div class="toggle-info"><h5>Email Notifications</h5><p>Instant alert to your inbox</p></div><span class="toggle-pill on">ON</span></div>
+        <div class="toggle-row" onclick="toggleAlert(this)"><div class="toggle-info"><h5>SMS via Twilio</h5><p>Text message on device loss</p></div><span class="toggle-pill off">OFF</span></div>
+        <div class="toggle-row" onclick="toggleAlert(this)"><div class="toggle-info"><h5>Battery Low Warning</h5><p>Alert when battery &lt; 20%</p></div><span class="toggle-pill on">ON</span></div>
+        <div class="toggle-row" onclick="toggleAlert(this)"><div class="toggle-info"><h5>Device Offline Alert</h5><p>No ping received for 10+ minutes</p></div><span class="toggle-pill on">ON</span></div>
+        <div class="toggle-row" onclick="toggleAlert(this)"><div class="toggle-info"><h5>Push Notifications</h5><p>Browser / mobile push alerts</p></div><span class="toggle-pill off">OFF</span></div>
+        <button class="btn-submit" style="margin-top:14px;" onclick="toast('⚙️ Alert settings saved successfully!','success')">Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════ DASHBOARD PAGE ══════════════════════════════ -->
+<div id="page-dashboard" class="page">
+<div class="section-page">
+  <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+  <div class="page-title-row">
+    <div class="page-label">07 — DASHBOARD</div>
+    <h1 class="page-title">Control Center</h1>
+    <p class="page-desc">Fully interactive dashboard — click sidebar items to switch views, click device rows, add devices, and more.</p>
+  </div>
+
+  <div class="dash-wrap">
+    <div class="dash-topbar">
+      <div class="wdot" style="background:#ff5f57"></div>
+      <div class="wdot" style="background:#ffbd2e"></div>
+      <div class="wdot" style="background:#28ca41"></div>
+      <div class="dash-url">trackguard.io/dashboard</div>
+    </div>
+    <div class="dash-body">
+      <div class="dash-sidebar">
+        <div class="dash-user">
+          <div class="dash-av">R</div>
+          <div><div class="dash-uname">Ravi Kumar</div><div class="dash-role">Admin · 6 devices</div></div>
+        </div>
+        <div class="dash-nav">
+          <div class="dash-nav-item active" onclick="switchDash(this,'devices')">📱 &nbsp;My Devices</div>
+          <div class="dash-nav-item" onclick="switchDash(this,'map')">🗺️ &nbsp;Live Map</div>
+          <div class="dash-nav-item" onclick="switchDash(this,'alerts')">🔔 &nbsp;Alerts <span style="background:var(--accent2);color:white;border-radius:4px;padding:1px 6px;font-size:10px;margin-left:4px;">1</span></div>
+          <div class="dash-nav-item" onclick="switchDash(this,'analytics')">📊 &nbsp;Analytics</div>
+          <div class="dash-nav-item" onclick="switchDash(this,'settings')">⚙️ &nbsp;Settings</div>
+          <div class="dash-nav-item danger" style="margin-top:16px;" onclick="toast('👋 Logged out securely. See you soon!','info')">🚪 &nbsp;Logout</div>
+        </div>
+      </div>
+      <div class="dash-main">
+
+        <!-- DEVICES VIEW -->
+        <div class="dash-view active" id="dview-devices">
+          <div class="dash-hdr"><h2>My Devices</h2><button class="btn-add" onclick="openModal('addDevice')">+ Add Device</button></div>
+          <div class="kpi-row">
+            <div class="kpi"><div class="kpi-val">6</div><div class="kpi-lbl">Total Devices</div></div>
+            <div class="kpi"><div class="kpi-val" style="color:#22c55e">5</div><div class="kpi-lbl">Safe & Online</div></div>
+            <div class="kpi"><div class="kpi-val" style="color:var(--accent2)">1</div><div class="kpi-lbl">Alerts Active</div></div>
+          </div>
+          <table class="dtable">
+            <thead><tr><th>DEVICE</th><th>TYPE</th><th>LAST SEEN</th><th>LOCATION</th><th>STATUS</th><th>ACTION</th></tr></thead>
+            <tbody>
+              <tr onclick="toast('💻 Dell XPS 15 — Battery 84% · Last seen just now','info')">
+                <td>Dell XPS 15</td><td style="color:var(--muted);font-size:12px">Laptop</td>
+                <td style="color:var(--muted);font-size:12px">Just now</td>
+                <td style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent)">17.3850°N 78.4867°E</td>
+                <td><span class="badge b-safe">SAFE</span></td>
+                <td><button onclick="event.stopPropagation();showPage('tracking')" style="padding:4px 10px;border-radius:5px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);color:var(--accent);font-size:11px;cursor:pointer;">Track</button></td>
+              </tr>
+              <tr onclick="toast('📱 OnePlus 12 — ALERT: Outside geofence!','warn')">
+                <td>OnePlus 12</td><td style="color:var(--muted);font-size:12px">Phone</td>
+                <td style="color:var(--muted);font-size:12px">2 min ago</td>
+                <td style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2)">17.4100°N 78.5100°E</td>
+                <td><span class="badge b-lost">LOST</span></td>
+                <td><button onclick="event.stopPropagation();showPage('tracking')" style="padding:4px 10px;border-radius:5px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.2);color:var(--accent2);font-size:11px;cursor:pointer;">Locate</button></td>
+              </tr>
+              <tr onclick="toast('🎒 Osprey Backpack — Moving · Battery 67%','info')">
+                <td>Osprey Backpack</td><td style="color:var(--muted);font-size:12px">Bag</td>
+                <td style="color:var(--muted);font-size:12px">1 min ago</td>
+                <td style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent)">17.3720°N 78.4600°E</td>
+                <td><span class="badge b-move">MOVING</span></td>
+                <td><button onclick="event.stopPropagation();showPage('tracking')" style="padding:4px 10px;border-radius:5px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);color:var(--accent);font-size:11px;cursor:pointer;">Track</button></td>
+              </tr>
+              <tr onclick="toast('📷 Canon EOS R50 — Safe · Last location: Studio','info')">
+                <td>Canon EOS R50</td><td style="color:var(--muted);font-size:12px">Camera</td>
+                <td style="color:var(--muted);font-size:12px">5 min ago</td>
+                <td style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent)">17.3800°N 78.4700°E</td>
+                <td><span class="badge b-safe">SAFE</span></td>
+                <td><button onclick="event.stopPropagation();showPage('tracking')" style="padding:4px 10px;border-radius:5px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);color:var(--accent);font-size:11px;cursor:pointer;">Track</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- MAP VIEW -->
+        <div class="dash-view" id="dview-map">
+          <div class="dash-hdr"><h2>Live Map</h2></div>
+          <p style="color:var(--muted);margin-bottom:16px;">Showing all 6 tracked devices in real-time.</p>
+          <button class="btn-add" onclick="showPage('tracking')">🗺️ Open Full Map →</button>
+        </div>
+
+        <!-- ALERTS VIEW -->
+        <div class="dash-view" id="dview-alerts">
+          <div class="dash-hdr"><h2>Active Alerts</h2></div>
+          <div class="notif warn" style="margin-bottom:12px;">
+            <div class="notif-ico">🚨</div>
+            <div class="notif-t"><h5>OnePlus 12 — Outside Geofence</h5><p>2.4km from safe zone · 2 min ago</p></div>
+          </div>
+          <button class="btn-add" onclick="showPage('alerts')">Manage All Alerts →</button>
+        </div>
+
+        <!-- ANALYTICS VIEW -->
+        <div class="dash-view" id="dview-analytics">
+          <div class="dash-hdr"><h2>Analytics</h2></div>
+          <div class="kpi-row" style="margin-bottom:16px;">
+            <div class="kpi"><div class="kpi-val">142</div><div class="kpi-lbl">Pings Today</div></div>
+            <div class="kpi"><div class="kpi-val" style="color:#22c55e">98%</div><div class="kpi-lbl">Uptime</div></div>
+            <div class="kpi"><div class="kpi-val" style="color:var(--accent2)">3</div><div class="kpi-lbl">Alerts This Week</div></div>
+          </div>
+          <p style="color:var(--muted);font-size:14px;">📊 Route heatmaps, battery graphs and movement history available in full analytics view.</p>
+          <button class="btn-add" style="margin-top:16px;" onclick="toast('📊 Full analytics view — coming soon!','info')">Export Report (CSV)</button>
+        </div>
+
+        <!-- SETTINGS VIEW -->
+        <div class="dash-view" id="dview-settings">
+          <div class="dash-hdr"><h2>Account Settings</h2></div>
+          <div class="fg"><label>DISPLAY NAME</label><input class="fi" value="Ravi Kumar"/></div>
+          <div class="fg"><label>EMAIL</label><input class="fi" value="ravi@example.com" type="email"/></div>
+          <div class="fg"><label>PHONE (SMS Alerts)</label><input class="fi" value="+91 98765 43210" type="tel"/></div>
+          <div class="fg"><label>NEW PASSWORD</label><input class="fi" type="password" placeholder="Leave blank to keep current"/></div>
+          <button class="btn-submit" style="width:auto;padding:10px 28px;" onclick="toast('✅ Settings saved successfully!','success')">Save Changes</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════ MODAL ══════════════════════════════ -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-x" onclick="closeModal()">✕</div>
+    <div id="modalInner"></div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toasts"></div>
+
+<script>
+// ── PAGE NAVIGATION ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0,0);
+  // Highlight active nav link
+  document.querySelectorAll('.nav-links a').forEach(a => a.style.color = '');
+}
+
+// ── HARDWARE TOGGLE ──
+function toggleHw(card) {
+  const isOpen = card.classList.contains('expanded');
+  document.querySelectorAll('.hw-card').forEach(c => c.classList.remove('expanded'));
+  if (!isOpen) card.classList.add('expanded');
+}
+
+// ── FEATURE TOGGLE ──
+function toggleFeat(card) {
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.feat-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+// ── SECURITY TOGGLE ──
+function toggleSec(card) {
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.sec-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+// ── STACK TOGGLE ──
+function toggleStack(card) {
+  card.classList.toggle('open');
+}
+
+// ── STACK TABS ──
+function switchTab(e, id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  e.target.classList.add('active');
+}
+
+// ── DASHBOARD VIEWS ──
+function switchDash(item, view) {
+  document.querySelectorAll('.dash-nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.dash-view').forEach(v => v.classList.remove('active'));
+  item.classList.add('active');
+  document.getElementById('dview-' + view).classList.add('active');
+}
+
+// ── MAP DEVICE POPUP ──
+const deviceData = {
+  laptop: { name: '💻 Dell XPS 15', rows: [['Status','🟢 SAFE'],['Latitude','17.3850° N'],['Longitude','78.4867° E'],['Battery','84%'],['Last Ping','Just now'],['Speed','0 km/h']] },
+  phone:  { name: '📱 OnePlus 12',  rows: [['Status','🔴 LOST'],['Latitude','17.4100° N'],['Longitude','78.5100° E'],['Battery','61%'],['Last Ping','2 min ago'],['Alert','Outside geofence!']] },
+  bag:    { name: '🎒 Osprey Bag',  rows: [['Status','🟡 MOVING'],['Latitude','17.3720° N'],['Longitude','78.4600° E'],['Battery','67%'],['Last Ping','1 min ago'],['Speed','4.2 km/h']] }
+};
+function showDeviceInfo(id) {
+  const d = deviceData[id];
+  const popup = document.getElementById('mapPopup');
+  document.getElementById('popupTitle').textContent = d.name;
+  document.getElementById('popupRows').innerHTML = d.rows.map(([k,v]) =>
+    `<div class="map-info-row"><span class="map-info-key">${k}</span><span class="map-info-val">${v}</span></div>`
+  ).join('');
+  popup.style.display = 'block';
+  popup.style.left = '20%'; popup.style.top = '10%';
+}
+
+// ── MAP FILTER ──
+function filterMap(type, btn) {
+  document.querySelectorAll('.map-tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const markers = { all: ['m1','m2','m3'], safe: ['m1','m3'], lost: ['m2'] };
+  ['m1','m2','m3'].forEach(id => {
+    document.getElementById(id).style.display = (markers[type]||[]).includes(id) ? 'block' : 'none';
+  });
+  toast(`🗺 Showing: ${type} devices`,'info');
+}
+
+// ── MODAL TEMPLATES ──
+const modals = {
+  login: `
+    <h3>Welcome Back</h3>
+    <p>Sign in to your TrackGuard account.</p>
+    <div class="fg"><label>EMAIL</label><input class="fi" type="email" placeholder="you@example.com" id="l-email"/></div>
+    <div class="fg"><label>PASSWORD</label><input class="fi" type="password" placeholder="••••••••" id="l-pass"/></div>
+    <button class="btn-submit" onclick="doLogin()">Sign In →</button>
+    <button class="btn-submit-ghost" onclick="closeModal();showPage('dashboard')">Demo: Enter Dashboard</button>
+    <div class="enc-badge" style="margin-top:14px">🔐 JWT secured · Auto logout after 15min</div>
+  `,
+  register: `
+    <h3>Create Account</h3>
+    <p>Start protecting your gadgets today.</p>
+    <div class="fr">
+      <div class="fg"><label>FIRST NAME</label><input class="fi" type="text" placeholder="Ravi" id="r-fn"/></div>
+      <div class="fg"><label>LAST NAME</label><input class="fi" type="text" placeholder="Kumar" id="r-ln"/></div>
+    </div>
+    <div class="fg"><label>EMAIL</label><input class="fi" type="email" placeholder="you@example.com" id="r-email"/></div>
+    <div class="fg"><label>PASSWORD</label><input class="fi" type="password" placeholder="Min. 8 characters" id="r-pass"/></div>
+    <div class="fg"><label>PHONE (for SMS alerts)</label><input class="fi" type="tel" placeholder="+91 98765 43210"/></div>
+    <button class="btn-submit" onclick="doRegister()">Create Account 🚀</button>
+    <div class="enc-badge" style="margin-top:14px">🔒 Password hashed with bcrypt · Secure connection</div>
+  `,
+  addDevice: `
+    <h3>Add New Device</h3>
+    <p>Register a gadget for real-time tracking.</p>
+    <div class="fg"><label>DEVICE NAME</label><input class="fi" type="text" placeholder="My Laptop" id="d-name"/></div>
+    <div class="fg"><label>DEVICE TYPE</label>
+      <select class="fi"><option>💻 Laptop</option><option>📱 Phone</option><option>📟 Tablet</option><option>🎒 Bag / Backpack</option><option>🚲 Bicycle</option><option>📷 Camera</option><option>🔧 Other</option></select>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>SERIAL NUMBER</label><input class="fi" type="text" placeholder="SN123456789"/></div>
+      <div class="fg"><label>TRACKER ID</label><input class="fi" type="text" placeholder="TG-A1B2C3"/></div>
+    </div>
+    <div class="fg"><label>GEOFENCE RADIUS</label>
+      <select class="fi"><option>100m</option><option>500m</option><option>1km</option><option>5km</option></select>
+    </div>
+    <button class="btn-submit" onclick="doAddDevice()">Add Device ＋</button>
+  `
+};
+
+function openModal(type) {
+  document.getElementById('modalInner').innerHTML = modals[type] || '';
+  document.getElementById('modalBg').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('show');
+}
+
+function doLogin() {
+  const e = document.getElementById('l-email')?.value;
+  const p = document.getElementById('l-pass')?.value;
+  if (!e || !p) { toast('⚠️ Please enter email and password','warn'); return; }
+  closeModal(); toast('✅ Signed in as ' + e,'success');
+  setTimeout(() => showPage('dashboard'), 500);
+}
+function doRegister() {
+  const fn = document.getElementById('r-fn')?.value;
+  const em = document.getElementById('r-email')?.value;
+  const pw = document.getElementById('r-pass')?.value;
+  if (!fn || !em || !pw) { toast('⚠️ Please fill all required fields','warn'); return; }
+  if (pw.length < 8) { toast('⚠️ Password must be at least 8 characters','warn'); return; }
+  closeModal(); toast('🎉 Account created! Welcome, ' + fn + '!','success');
+  setTimeout(() => showPage('dashboard'), 600);
+}
+function doAddDevice() {
+  const n = document.getElementById('d-name')?.value;
+  if (!n) { toast('⚠️ Please enter a device name','warn'); return; }
+  closeModal(); toast('📱 ' + n + ' added successfully!','success');
+}
+
+// ── ALERTS ──
+function addAlert(type) {
+  const feed = document.getElementById('notifFeed');
+  const items = {
+    warn: ['🚨','warn','Device Lost Alert!','Camera EOS R50 has left its safe zone boundary.',Date.now()],
+    ok: ['✅','ok','Device Back Safe','Backpack tracker re-entered the home geofence zone.',Date.now()]
+  };
+  const [ico, cls, title, msg] = items[type];
+  const div = document.createElement('div');
+  div.className = `notif ${cls}`;
+  div.onclick = function(){ markRead(this); };
+  div.innerHTML = `<div class="notif-ico">${ico}</div><div class="notif-t"><h5>${title}</h5><p>${msg}</p><div class="notif-time">Just now</div></div>`;
+  div.style.animation = 'slideUp .3s ease';
+  feed.prepend(div);
+  toast(ico + ' ' + title, type === 'warn' ? 'warn' : 'success');
+}
+function markRead(el) {
+  el.style.opacity = '0.5';
+  el.style.transform = 'none';
+  el.style.cursor = 'default';
+  toast('✓ Notification marked as read','info');
+}
+function toggleAlert(row) {
+  const pill = row.querySelector('.toggle-pill');
+  const isOn = pill.classList.contains('on');
+  pill.classList.toggle('on', !isOn);
+  pill.classList.toggle('off', isOn);
+  pill.textContent = isOn ? 'OFF' : 'ON';
+  toast((isOn ? '🔕 ' : '🔔 ') + row.querySelector('h5').textContent + (isOn ? ' disabled' : ' enabled'),'info');
+}
+
+// ── TOAST ──
+function toast(msg, type='info') {
+  const colors = { success:'#22c55e', warn:'#f59e0b', info:'var(--accent)', error:'var(--accent2)' };
+  const icons = { success:'✅', warn:'⚠️', info:'ℹ️', error:'❌' };
+  const container = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.style.borderColor = colors[type] || 'var(--border)';
+  el.innerHTML = `<span style="font-size:17px">${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  container.appendChild(el);
+  setTimeout(() => { el.classList.add('out'); setTimeout(()=>el.remove(), 300); }, 3500);
+}
+
+// ── LIVE MAP MARKER ANIMATION ──
+const mapMarkers = [
+  { id: 'm1', baseL: 46, baseT: 36 },
+  { id: 'm2', baseL: 75, baseT: 55 },
+  { id: 'm3', baseL: 20, baseT: 70 }
+];
+setInterval(() => {
+  mapMarkers.forEach(m => {
+    const el = document.getElementById(m.id);
+    if (!el || el.style.display === 'none') return;
+    const l = m.baseL + (Math.random()-.5)*2;
+    const t = m.baseT + (Math.random()-.5)*1.5;
+    el.style.left = Math.min(Math.max(l,5),90) + '%';
+    el.style.top = Math.min(Math.max(t,5),90) + '%';
+    m.baseL = l; m.baseT = t;
+  });
+}, 3000);
+
+// ── STARTUP ──
+setTimeout(() => toast('🛰️ TrackGuard loaded — All systems online','success'), 600);
+</script>
+</body>
+</html>
